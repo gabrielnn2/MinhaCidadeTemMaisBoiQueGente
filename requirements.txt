@@ -3,4 +3,5 @@ pandas
 numpy
 matplotlib
 plotly
-altair==5.3.0
+altair
+
