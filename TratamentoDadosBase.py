@@ -19,8 +19,9 @@ def consolidar_base():
 
     municipios['CO_MUNICIPIO'] = municipios['CO_MUNICIPIO'].astype('int64')
 
-    # Merge bovinos e populacao
-    df = pd.merge(bovinos, populacao, on=["CO_MUNICIPIO", "ANO"], how="inner")
+    # Merge populacao e bovinos (left join preserva municípios 100% urbanos sem rebanho bovino)
+    df = pd.merge(populacao, bovinos, on=["CO_MUNICIPIO", "ANO"], how="left")
+    df['BOVINO'] = df['BOVINO'].fillna(0).astype('int64')
     
     # Merge com dados cadastrais e geográficos dos municípios
     df = pd.merge(df, municipios, on=["CO_MUNICIPIO"], how="left")
