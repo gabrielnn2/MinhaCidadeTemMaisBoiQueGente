@@ -56,6 +56,16 @@ export default function App() {
 
   const formatNumber = (val) => Number(val || 0).toLocaleString('pt-BR');
 
+  const UF_NAMES = {
+    AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia',
+    CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás',
+    MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais',
+    PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí',
+    RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul',
+    RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo',
+    SE: 'Sergipe', TO: 'Tocantins'
+  };
+
   // Regiões e UFs disponíveis
   const regioesDisponiveis = useMemo(() => {
     if (!data) return [];
@@ -68,7 +78,11 @@ export default function App() {
     if (regFilter !== 'Todas as Regiões') {
       list = list.filter(m => m.reg === regFilter);
     }
-    return ['Todas as UFs', ...Array.from(new Set(list.map(m => m.uf))).sort()];
+    const ufs = Array.from(new Set(list.map(m => m.uf))).sort();
+    return [
+      { sigla: 'Todas as UFs', label: 'Todas as UFs' },
+      ...ufs.map(uf => ({ sigla: uf, label: `${UF_NAMES[uf] || uf} (${uf})` }))
+    ];
   }, [data, regFilter]);
 
   // Municípios filtrados pelo recorte ativo
@@ -156,7 +170,7 @@ export default function App() {
               setSelectedCity(null);
             }}
           >
-            {ufsDisponiveis.map(u => <option key={u} value={u}>{u}</option>)}
+            {ufsDisponiveis.map(u => <option key={u.sigla} value={u.sigla}>{u.label}</option>)}
           </select>
         </div>
       </div>
@@ -165,14 +179,14 @@ export default function App() {
       <div className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-tag">Total de Bois</div>
-          <div className="kpi-value">{formatNumber(kpis.totalBov)}</div>
-          <div className="kpi-footnote">bois no recorte</div>
+          <div className="kpi-value" style={{ color: 'var(--color-amber)' }}>{formatNumber(kpis.totalBov)}</div>
+          <div className="kpi-footnote">bois</div>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-tag">Total de Pessoas</div>
-          <div className="kpi-value">{formatNumber(kpis.totalPop)}</div>
-          <div className="kpi-footnote">pessoas no recorte</div>
+          <div className="kpi-value" style={{ color: 'var(--color-emerald)' }}>{formatNumber(kpis.totalPop)}</div>
+          <div className="kpi-footnote">pessoas</div>
         </div>
 
         <div className="kpi-card">
@@ -181,7 +195,7 @@ export default function App() {
             {kpis.razao.toFixed(2).replace('.', ',')}
           </div>
           <div className="kpi-footnote">
-            {kpis.saldo >= 0 ? `+${formatNumber(kpis.saldo)} bois a mais` : `${formatNumber(kpis.saldo)} pessoas a mais`}
+            {kpis.saldo >= 0 ? `${formatNumber(Math.abs(kpis.saldo))} bois a mais` : `${formatNumber(Math.abs(kpis.saldo))} pessoas a mais`}
           </div>
         </div>
 
@@ -202,19 +216,19 @@ export default function App() {
         </div>
       </div>
 
-      {/* Navegação por Abas (Sem aba de Crescimento Histórico) */}
+      {/* Navegação por Abas */}
       <div className="tabs-nav">
         <button className={`tab-btn ${activeTab === 'mapa' ? 'active' : ''}`} onClick={() => setActiveTab('mapa')}>
-          🗺️ Mapa de Polígonos & Consulta
+          1. Mapa e leitura municipal
         </button>
         <button className={`tab-btn ${activeTab === 'segmentacao' ? 'active' : ''}`} onClick={() => setActiveTab('segmentacao')}>
-          📊 Segmentação por Região & UF
+          2. Leitura por Região e UF
         </button>
         <button className={`tab-btn ${activeTab === 'tabela' ? 'active' : ''}`} onClick={() => setActiveTab('tabela')}>
-          📋 Tabela de Dados
+          3. Tabela de dados por município
         </button>
         <button className={`tab-btn ${activeTab === 'documentacao' ? 'active' : ''}`} onClick={() => setActiveTab('documentacao')}>
-          📄 Documentação
+          4. Documentação
         </button>
       </div>
 

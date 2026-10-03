@@ -88,6 +88,38 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
       attributionControl: false
     });
 
+    class ResetZoomControl {
+      onAdd(mapInstance) {
+        this._map = mapInstance;
+        this._container = document.createElement('div');
+        this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'maplibregl-ctrl-reset-brazil';
+        button.title = 'Retornar ao enquadramento do Brasil inteiro';
+        button.innerHTML = `
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto; display: block;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+        `;
+        button.onclick = () => {
+          onSelectCity(null);
+          mapInstance.flyTo({ center: [-51.925, -14.235], zoom: 3.5, duration: 800 });
+        };
+        this._container.appendChild(button);
+        return this._container;
+      }
+      onRemove() {
+        if (this._container && this._container.parentNode) {
+          this._container.parentNode.removeChild(this._container);
+        }
+        this._map = undefined;
+      }
+    }
+
+    map.addControl(new ResetZoomControl(), 'bottom-right');
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     
     // Popup sem moldura branca e com posicionamento customizado
@@ -258,6 +290,7 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
             map.setFeatureState({ source: 'municipios', id: cid }, { hover: true });
 
             const temMaisBoi = Number(p.mais_boi) === 1;
+            const corRazao = temMaisBoi ? '#F59E0B' : '#10B981';
             const html = `
               <div class="custom-map-tooltip">
                 <div class="tooltip-header">${p.name} (${p.uf})</div>
@@ -266,14 +299,14 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
                 </div>
                 <div class="tooltip-row">
                   <span>🐂 Bois:</span>
-                  <strong>${Number(p.bov || 0).toLocaleString('pt-BR')}</strong>
+                  <strong style="color: #F59E0B;">${Number(p.bov || 0).toLocaleString('pt-BR')}</strong>
                 </div>
                 <div class="tooltip-row">
                   <span>👥 Pessoas:</span>
-                  <strong>${Number(p.pop || 0).toLocaleString('pt-BR')}</strong>
+                  <strong style="color: #10B981;">${Number(p.pop || 0).toLocaleString('pt-BR')}</strong>
                 </div>
                 <div class="tooltip-footer">
-                  ⚖️ Razão: <strong>${Number(p.razao || 0).toFixed(2).replace('.', ',')}</strong> bois por pessoa
+                  ⚖️ Razão: <strong style="color: ${corRazao};">${Number(p.razao || 0).toFixed(2).replace('.', ',')}</strong> bois por pessoa
                 </div>
               </div>
             `;
@@ -436,15 +469,15 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
         </button>
       )}
 
-      {/* Legenda com o indicador atualizado */}
+      {/* Legenda em coluna única com duas linhas */}
       <div className="map-legend-overlay">
         <div className="legend-swatch">
           <div className="swatch-color" style={{ background: '#F59E0B' }} />
-          <span><strong>Mais Boi que Gente</strong> (Bois &gt; Pessoas)</span>
+          <span>Mais Boi que Gente</span>
         </div>
         <div className="legend-swatch">
           <div className="swatch-color" style={{ background: '#10B981' }} />
-          <span><strong>Mais Gente que Boi</strong> (Pessoas &ge; Bois)</span>
+          <span>Mais Gente que Boi</span>
         </div>
       </div>
 

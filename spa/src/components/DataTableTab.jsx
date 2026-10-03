@@ -81,7 +81,9 @@ export default function DataTableTab({ municipios }) {
                   <td style={{ textAlign: 'right', color: 'var(--color-emerald)', fontWeight: '600' }}>
                     {formatNumber(m.pop)}
                   </td>
-                  <td style={{ textAlign: 'right' }}>{m.razao.toFixed(2).replace('.', ',')}</td>
+                  <td style={{ textAlign: 'right', color: m.razao > 1 ? 'var(--color-amber)' : 'var(--color-emerald)', fontWeight: '600' }}>
+                    {m.razao.toFixed(2).replace('.', ',')}
+                  </td>
                   <td style={{ textAlign: 'right', color: saldo >= 0 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                     {saldo > 0 ? '+' : ''}{formatNumber(saldo)}
                   </td>

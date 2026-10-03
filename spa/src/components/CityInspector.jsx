@@ -74,7 +74,7 @@ export default function CityInspector({
 
             <div className="metric-mini">
               <div className="metric-mini-label">Razão</div>
-              <div className="metric-mini-val">
+              <div className="metric-mini-val" style={{ color: nationalSummary.saldo >= 0 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {nationalSummary.razao.toFixed(2).replace('.', ',')}
               </div>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>bois por pessoa</div>
@@ -83,7 +83,7 @@ export default function CityInspector({
             <div className="metric-mini">
               <div className="metric-mini-label">Diferença</div>
               <div className="metric-mini-val" style={{ color: nationalSummary.saldo >= 0 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
-                {nationalSummary.saldo > 0 ? '+' : ''}{formatNumber(nationalSummary.saldo)}
+                {formatNumber(Math.abs(nationalSummary.saldo))}
               </div>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
                 {nationalSummary.saldo >= 0 ? 'bois a mais que pessoas' : 'pessoas a mais que bois'}
@@ -101,7 +101,7 @@ export default function CityInspector({
             borderRadius: '4px',
             marginBottom: '16px'
           }}>
-            Em <strong>2025</strong>, exatamente <strong>{formatNumber(nationalSummary.cidadesMaisBoi)} municípios</strong> ({nationalSummary.pctMaisBoi.toFixed(1).replace('.', ',')}% do país) possuem mais bois do que pessoas.
+            Em <strong>2025</strong>, <strong>{formatNumber(nationalSummary.cidadesMaisBoi)} municípios</strong> ({nationalSummary.pctMaisBoi.toFixed(1).replace('.', ',')}% do país) possuíam mais bois do que pessoas.
           </div>
 
           <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
@@ -113,7 +113,7 @@ export default function CityInspector({
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
+                <YAxis domain={[100000000, 250000000]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
@@ -173,7 +173,7 @@ export default function CityInspector({
 
             <div className="metric-mini">
               <div className="metric-mini-label">Razão Boi/Pessoa</div>
-              <div className="metric-mini-val">
+              <div className="metric-mini-val" style={{ color: selectedCity.mais_boi === 1 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {selectedCity.razao.toFixed(2).replace('.', ',')}
               </div>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>bois por pessoa</div>
@@ -182,7 +182,7 @@ export default function CityInspector({
             <div className="metric-mini">
               <div className="metric-mini-label">Diferença</div>
               <div className="metric-mini-val" style={{ color: selectedCity.bov >= selectedCity.pop ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
-                {selectedCity.bov > selectedCity.pop ? '+' : ''}{formatNumber(selectedCity.bov - selectedCity.pop)}
+                {formatNumber(Math.abs(selectedCity.bov - selectedCity.pop))}
               </div>
               <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
                 {selectedCity.bov >= selectedCity.pop ? 'bois a mais que pessoas' : 'pessoas a mais que bois'}
@@ -199,7 +199,7 @@ export default function CityInspector({
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748B" fontSize={11} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
+                <YAxis domain={['auto', 'auto']} stroke="#64748B" fontSize={11} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
