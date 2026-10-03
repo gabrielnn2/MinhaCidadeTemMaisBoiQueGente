@@ -1,6 +1,8 @@
-﻿streamlit
+streamlit
 pandas
 numpy
 matplotlib
 plotly
 altair
+pydeck
+fastparquet
