@@ -55,7 +55,7 @@ export default function CityInspector({
 
           <div style={{ marginTop: '10px', marginBottom: '16px' }}>
             <span className="badge-status badge-boi">
-              🐂 DIAGNÓSTICO NACIONAL: O BRASIL TEM MAIS BOI QUE GENTE
+              🐂 O BRASIL TEM MAIS BOI QUE GENTE
             </span>
           </div>
 
@@ -117,7 +117,7 @@ export default function CityInspector({
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis domain={[100000000, 250000000]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
+                <YAxis domain={[150000000, 250000000]} ticks={[150000000, 175000000, 200000000, 225000000, 250000000]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
@@ -153,8 +153,8 @@ export default function CityInspector({
           <div style={{ marginTop: '10px', marginBottom: '16px' }}>
             <span className={`badge-status ${selectedCity.mais_boi === 1 ? 'badge-boi' : 'badge-gente'}`}>
               {selectedCity.mais_boi === 1
-                ? '🐂 SIM! Esta cidade tem MAIS BOI QUE GENTE'
-                : '👥 NÃO! Esta cidade tem MAIS GENTE QUE BOI'}
+                ? '🐂 Esta cidade tem MAIS BOI QUE GENTE'
+                : '👥 Esta cidade tem MAIS GENTE QUE BOI'}
             </span>
           </div>
 

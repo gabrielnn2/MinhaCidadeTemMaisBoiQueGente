@@ -86,15 +86,15 @@ export default function SegmentationTab({ municipios }) {
             {temMaisBoi ? '🐂 Mais Boi que Gente' : '👥 Mais Gente que Boi'}
           </div>
           <div className="tooltip-row">
-            <span>🐂 Bois:</span>
+            <span>Bois:</span>
             <strong style={{ color: '#F59E0B' }}>{formatNumber(d.bov)}</strong>
           </div>
           <div className="tooltip-row">
-            <span>👥 Pessoas:</span>
+            <span>Pessoas:</span>
             <strong style={{ color: '#10B981' }}>{formatNumber(d.pop)}</strong>
           </div>
           <div className="tooltip-footer">
-            ⚖️ Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
+            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
           </div>
         </div>
       );
@@ -115,15 +115,15 @@ export default function SegmentationTab({ municipios }) {
             {temMaisBoi ? '🐂 Mais Boi que Gente' : '👥 Mais Gente que Boi'}
           </div>
           <div className="tooltip-row">
-            <span>🐂 Bois:</span>
+            <span>Bois:</span>
             <strong style={{ color: '#F59E0B' }}>{formatNumber(d.bov)}</strong>
           </div>
           <div className="tooltip-row">
-            <span>👥 Pessoas:</span>
+            <span>Pessoas:</span>
             <strong style={{ color: '#10B981' }}>{formatNumber(d.pop)}</strong>
           </div>
           <div className="tooltip-footer">
-            ⚖️ Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
+            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
           </div>
         </div>
       );

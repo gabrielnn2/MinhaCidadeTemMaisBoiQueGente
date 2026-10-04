@@ -98,10 +98,8 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
         button.className = 'maplibregl-ctrl-reset-brazil';
         button.title = 'Retornar ao enquadramento do Brasil inteiro';
         button.innerHTML = `
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: auto; display: block;">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="2" y1="12" x2="22" y2="12"></line>
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin: auto; display: block;">
+            <path d="M 3.0 8.9 L 3.5 7.8 L 4.9 7.4 L 4.9 4.7 L 6.0 4.4 L 6.5 5.1 L 7.0 5.0 L 7.8 4.4 L 7.2 3.5 L 8.1 3.8 L 9.3 3.0 L 10.0 4.9 L 11.3 4.3 L 12.7 4.4 L 13.3 3.4 L 14.0 5.3 L 16.4 6.1 L 16.7 6.6 L 18.7 6.8 L 20.7 7.8 L 21.0 8.7 L 20.8 9.7 L 19.1 11.5 L 19.0 13.6 L 18.2 15.6 L 15.0 16.9 L 14.6 18.6 L 13.7 19.7 L 12.5 21.0 L 12.2 20.2 L 10.5 19.3 L 12.3 17.5 L 11.3 15.7 L 10.3 15.6 L 10.5 13.8 L 10.2 13.0 L 9.3 12.9 L 9.2 11.8 L 7.1 11.0 L 6.9 10.0 L 4.5 10.5 L 4.5 9.9 L 3.4 9.8 L 3.0 8.9 Z"></path>
           </svg>
         `;
         button.onclick = () => {
@@ -298,15 +296,15 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
                   ${temMaisBoi ? '🐂 Mais Boi que Gente' : '👥 Mais Gente que Boi'}
                 </div>
                 <div class="tooltip-row">
-                  <span>🐂 Bois:</span>
+                  <span>Bois:</span>
                   <strong style="color: #F59E0B;">${Number(p.bov || 0).toLocaleString('pt-BR')}</strong>
                 </div>
                 <div class="tooltip-row">
-                  <span>👥 Pessoas:</span>
+                  <span>Pessoas:</span>
                   <strong style="color: #10B981;">${Number(p.pop || 0).toLocaleString('pt-BR')}</strong>
                 </div>
                 <div class="tooltip-footer">
-                  ⚖️ Razão: <strong style="color: ${corRazao};">${Number(p.razao || 0).toFixed(2).replace('.', ',')}</strong> bois por pessoa
+                  Razão: <strong style="color: ${corRazao};">${Number(p.razao || 0).toFixed(2).replace('.', ',')}</strong> bois por pessoa
                 </div>
               </div>
             `;
