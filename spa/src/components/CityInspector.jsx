@@ -5,6 +5,7 @@ import { ArrowLeft, MapPin } from 'lucide-react';
 export default function CityInspector({
   selectedCity,
   onResetCity,
+  onResetBrasil,
   nationalSummary,
   anos,
   cityHistory,
@@ -12,6 +13,13 @@ export default function CityInspector({
   ufFilter
 }) {
   const isBrasil = !selectedCity;
+  const hasFilter = Boolean(
+    selectedCity ||
+    (regFilter && regFilter !== 'Todas as Regiões') ||
+    (ufFilter && ufFilter !== 'Todas as UFs')
+  );
+
+  const handleReset = onResetBrasil || onResetCity;
 
   // Preparar dados do gráfico municipal
   let chartData = [];
@@ -35,7 +43,7 @@ export default function CityInspector({
         // CASO 1: AGREGADO ESPECIAL DO BRASIL / RECORTE
         // ==========================================
         <div className="card-box">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
               <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-display)' }}>
                 {ufFilter && ufFilter !== 'Todas as UFs'
@@ -48,6 +56,12 @@ export default function CityInspector({
                 Cobertura: {formatNumber(nationalSummary.totalMun)} municípios • Ano 2025
               </div>
             </div>
+
+            {hasFilter && (
+              <button className="btn-primary" onClick={handleReset} title="Restaurar visão nacional">
+                <ArrowLeft size={14} /> Brasil
+              </button>
+            )}
           </div>
 
           <div style={{ marginTop: '10px', marginBottom: '16px' }}>
@@ -130,7 +144,7 @@ export default function CityInspector({
               </div>
             </div>
 
-            <button className="btn-primary" onClick={onResetCity} title="Restaurar visão nacional">
+            <button className="btn-primary" onClick={handleReset} title="Restaurar visão nacional">
               <ArrowLeft size={14} /> Brasil
             </button>
           </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { ArrowLeft } from 'lucide-react';
 
 // Configurar Web Worker nativo do MapLibre GL v6
 maplibregl.setWorkerUrl('/maplibre-gl-worker.mjs');
@@ -72,13 +73,31 @@ const BRAZIL_BOUNDS = [
   [-34.7933, 5.2722]    // Nordeste: Paraíba / Roraima
 ];
 
-export default function MapComponent({ selectedCity, onSelectCity, ufFilter, regFilter, classFilter }) {
+export default function MapComponent({ selectedCity, onSelectCity, onResetBrasil, ufFilter, regFilter, classFilter }) {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
   const popupRef = useRef(null);
   const hoveredCityIdRef = useRef(null);
   const [mapLoading, setMapLoading] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
+
+  const hasFilter = Boolean(
+    selectedCity ||
+    (regFilter && regFilter !== 'Todas as Regiões') ||
+    (ufFilter && ufFilter !== 'Todas as UFs')
+  );
+
+  // ResizeObserver para manter mapa responsivo e alinhado
+  useEffect(() => {
+    if (!mapContainer.current) return;
+    const ro = new ResizeObserver(() => {
+      if (mapRef.current) {
+        mapRef.current.resize();
+      }
+    });
+    ro.observe(mapContainer.current);
+    return () => ro.disconnect();
+  }, []);
 
   // Inicializar mapa
   useEffect(() => {
@@ -110,7 +129,11 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
           </svg>
         `;
         button.onclick = () => {
-          onSelectCity(null);
+          if (onResetBrasil) {
+            onResetBrasil();
+          } else {
+            onSelectCity(null);
+          }
           mapInstance.fitBounds(BRAZIL_BOUNDS, {
             padding: { top: 16, bottom: 20, left: 16, right: 16 },
             duration: 800
@@ -477,13 +500,13 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
       )}
 
       {/* Botão Brasil posicionado no limite superior direito dentro do mapa */}
-      {selectedCity && (
+      {hasFilter && (
         <button
           className="map-btn-brasil-corner"
-          onClick={() => onSelectCity(null)}
+          onClick={onResetBrasil || (() => onSelectCity(null))}
           title="Retornar à visão consolidada do Brasil"
         >
-          <span>← Ver Brasil Completo</span>
+          <ArrowLeft size={14} /> Brasil
         </button>
       )}
 

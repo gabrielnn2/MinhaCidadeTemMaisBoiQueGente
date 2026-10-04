@@ -126,6 +126,13 @@ export default function App() {
     ).slice(0, 40);
   }, [data, searchQuery, filteredMunicipios]);
 
+  const handleResetBrasil = () => {
+    setSelectedCity(null);
+    setSearchQuery('');
+    setRegFilter('Todas as Regiões');
+    setUfFilter('Todas as UFs');
+  };
+
   if (loading || !data) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'var(--bg-app)', color: 'var(--text-muted)' }}>
@@ -147,6 +154,26 @@ export default function App() {
             Diagnóstico territorial interativo comparando a quantidade de bois e pessoas no Brasil com dados oficiais do IBGE (2025).
           </div>
         </div>
+
+        {/* Link do LinkedIn (Preto e Branco) */}
+        <a
+          href="https://www.linkedin.com/in/gabrielnn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="linkedin-link-btn"
+          title="Perfil no LinkedIn"
+          aria-label="Perfil no LinkedIn"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+          </svg>
+        </a>
       </div>
 
       {/* Navegação por Abas */}
@@ -175,13 +202,14 @@ export default function App() {
               setSelectedCity(city);
               setSearchQuery(city ? `${city.name} (${city.uf})` : '');
             }}
+            onResetBrasil={handleResetBrasil}
             ufFilter={ufFilter}
             regFilter={regFilter}
             classFilter={classFilter}
           />
 
           {/* Painel Lateral: Filtros, Busca & Inspetor (Brasil / Cidade) */}
-          <div>
+          <div className="map-sidebar-column">
             {/* Filtros de Recorte (Região e UF) logo acima da seleção de município */}
             <div className="filter-row" style={{ marginBottom: '12px' }}>
               <select
@@ -229,8 +257,7 @@ export default function App() {
                   <div
                     className={`search-item ${!selectedCity ? 'selected' : ''}`}
                     onClick={() => {
-                      setSelectedCity(null);
-                      setSearchQuery('');
+                      handleResetBrasil();
                       setIsSearchOpen(false);
                     }}
                   >
@@ -257,10 +284,8 @@ export default function App() {
             {/* Inspetor (Agregado Especial do Brasil ou Cidade Selecionada) */}
             <CityInspector
               selectedCity={selectedCity}
-              onResetCity={() => {
-                setSelectedCity(null);
-                setSearchQuery('');
-              }}
+              onResetCity={handleResetBrasil}
+              onResetBrasil={handleResetBrasil}
               nationalSummary={kpis}
               anos={data.anos}
               cityHistory={data.historico_municipios}
