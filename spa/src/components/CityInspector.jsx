@@ -157,13 +157,13 @@ export default function CityInspector({
             </span>
           </div>
 
-          <div className="metric-mini-grid">
+          <div className="metric-mini-grid metric-mini-grid-city">
             <div className="metric-mini">
               <div className="metric-mini-label">Total de Bois</div>
               <div className="metric-mini-val" style={{ color: 'var(--color-amber)' }}>
                 {formatNumber(selectedCity.bov)}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>bois na cidade</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>bois na cidade</div>
             </div>
 
             <div className="metric-mini">
@@ -171,7 +171,7 @@ export default function CityInspector({
               <div className="metric-mini-val" style={{ color: 'var(--color-emerald)' }}>
                 {formatNumber(selectedCity.pop)}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>pessoas na cidade</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>pessoas na cidade</div>
             </div>
 
             <div className="metric-mini">
@@ -179,7 +179,7 @@ export default function CityInspector({
               <div className="metric-mini-val" style={{ color: selectedCity.mais_boi === 1 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {selectedCity.razao.toFixed(2).replace('.', ',')}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>bois por pessoa</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>bois por pessoa</div>
             </div>
 
             <div className="metric-mini">
@@ -187,29 +187,29 @@ export default function CityInspector({
               <div className="metric-mini-val" style={{ color: selectedCity.bov >= selectedCity.pop ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {formatNumber(Math.abs(selectedCity.bov - selectedCity.pop))}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>
                 {selectedCity.bov >= selectedCity.pop ? 'bois a mais que pessoas' : 'pessoas a mais que bois'}
               </div>
             </div>
           </div>
 
-          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
+          <div style={{ fontSize: '0.82rem', fontWeight: '600', color: 'var(--text-main)', marginTop: '6px', marginBottom: '4px' }}>
             Evolução Histórica de {selectedCity.name} (2000 a 2025)
           </div>
 
-          <div style={{ height: '200px', width: '100%' }}>
+          <div className="city-chart-wrapper">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <LineChart data={chartData} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis domain={['auto', 'auto']} width={48} stroke="#64748B" fontSize={11} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
+                <XAxis dataKey="ano" stroke="#64748B" fontSize={10} tickLine={false} />
+                <YAxis domain={['auto', 'auto']} width={46} stroke="#64748B" fontSize={10} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
+                  contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '11px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
                   labelFormatter={(l) => `Ano: ${l}`}
                 />
-                <Line type="monotone" dataKey="bois" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 2 }} name="bois" />
-                <Line type="monotone" dataKey="pessoas" stroke="#10B981" strokeWidth={2.5} dot={{ r: 2 }} name="pessoas" />
+                <Line type="monotone" dataKey="bois" stroke="#F59E0B" strokeWidth={2.2} dot={{ r: 2 }} name="bois" />
+                <Line type="monotone" dataKey="pessoas" stroke="#10B981" strokeWidth={2.2} dot={{ r: 2 }} name="pessoas" />
               </LineChart>
             </ResponsiveContainer>
           </div>
