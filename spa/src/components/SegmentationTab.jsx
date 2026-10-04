@@ -76,11 +76,6 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
     pct_boi: Number(((u.cidades_boi / u.cidades) * 100).toFixed(1))
   })).sort((a, b) => b.razao - a.razao);
 
-  // 3. Top 10 Maiores Rebanhos de Bois
-  const topBov = [...municipios].sort((a, b) => b.bov - a.bov).slice(0, 10);
-
-  // 4. Top 10 Cidades com Maior Razão Boi por Pessoa (mínimo 1000 pessoas)
-  const topRazao = [...municipios].filter(m => m.pop >= 1000).sort((a, b) => b.razao - a.razao).slice(0, 10);
 
   // Custom Tooltip para o comparativo regional de volumes
   const CustomRegionTooltip = ({ active, payload }) => {
@@ -241,73 +236,6 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabelas Top 10 */}
-      <div className="grid-responsive-2col">
-        <div className="card-box">
-          <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '12px' }}>
-            Top 10 Cidades com Mais Bois no Brasil
-          </div>
-          <div className="table-responsive">
-            <table className="data-table" style={{ minWidth: '420px' }}>
-              <thead>
-                <tr>
-                  <th>Município</th>
-                  <th>UF</th>
-                  <th style={{ textAlign: 'right' }}>Bois</th>
-                  <th style={{ textAlign: 'right' }}>Pessoas</th>
-                  <th style={{ textAlign: 'right' }}>Razão</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topBov.map(m => (
-                  <tr key={m.id}>
-                    <td><strong>{m.name}</strong></td>
-                    <td>{m.uf}</td>
-                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
-                    <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
-                    <td style={{ textAlign: 'right', color: m.razao > 1 ? 'var(--color-amber)' : 'var(--color-emerald)', fontWeight: '600' }}>
-                      {m.razao.toFixed(2).replace('.', ',')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="card-box">
-          <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '12px' }}>
-            Top 10 Cidades com Maior Razão Boi por Pessoa
-          </div>
-          <div className="table-responsive">
-            <table className="data-table" style={{ minWidth: '420px' }}>
-              <thead>
-                <tr>
-                  <th>Município</th>
-                  <th>UF</th>
-                  <th style={{ textAlign: 'right' }}>Bois</th>
-                  <th style={{ textAlign: 'right' }}>Pessoas</th>
-                  <th style={{ textAlign: 'right' }}>Razão</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topRazao.map(m => (
-                  <tr key={m.id}>
-                    <td><strong>{m.name}</strong></td>
-                    <td>{m.uf}</td>
-                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
-                    <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
-                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '700' }}>
-                      {m.razao.toFixed(2).replace('.', ',')}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       </div>

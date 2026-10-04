@@ -1,80 +1,104 @@
 import React, { useState, useMemo } from 'react';
-import { Download, Search, ArrowUpDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { Download, Search, ArrowUpDown, ChevronDown, ChevronUp, Info } from 'lucide-react';
+
+const UF_FULL_NAMES = {
+  AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia',
+  CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás',
+  MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais',
+  PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí',
+  RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul',
+  RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo',
+  SE: 'Sergipe', TO: 'Tocantins'
+};
+
+// Função para normalizar texto (remove acentos, pontuação e converte para minúsculas)
+function normalizeText(text) {
+  return (text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+}
 
 export default function DataTableTab({ municipios, allMunicipios }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('bov'); // 'bov' | 'razao' | 'pop' | 'saldo' | 'name' | 'uf' | 'id'
+  const [sortBy, setSortBy] = useState('bov'); // 'id' | 'name' | 'uf' | 'reg' | 'bov' | 'pop' | 'razao' | 'saldo' | 'mais_boi'
   const [sortOrder, setSortOrder] = useState('desc'); // 'desc' | 'asc'
   const [pageSize, setPageSize] = useState(200); // 100 | 200 | 500 | 'all'
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchInAll, setSearchInAll] = useState(true);
 
   const formatNumber = (val) => Number(val || 0).toLocaleString('pt-BR');
 
-  // Base de dados para a busca:
-  // Se houver termo de busca e searchInAll estiver ativo, pesquisa em todas as 5.570 cidades do Brasil
+  // Base para busca: pesquisa na base nacional completa de 5.570 municípios se houver busca digitada
   const sourceList = useMemo(() => {
-    if (searchTerm.trim() && searchInAll && allMunicipios && allMunicipios.length > 0) {
+    if (searchTerm.trim() && allMunicipios && allMunicipios.length > 0) {
       return allMunicipios;
     }
     return municipios || [];
-  }, [searchTerm, searchInAll, allMunicipios, municipios]);
+  }, [searchTerm, allMunicipios, municipios]);
 
-  // 1. Filtragem por busca (nome, UF ou código IBGE)
+  // 1. Filtragem inteligente: Município, Sigla da UF, Nome Completo da UF, Região e Código IBGE
   const filteredData = useMemo(() => {
     if (!searchTerm.trim()) return sourceList;
-    const q = searchTerm.toLowerCase().trim();
-    return sourceList.filter(m =>
-      m.name.toLowerCase().includes(q) ||
-      m.uf.toLowerCase().includes(q) ||
-      String(m.id).includes(q)
-    );
+    const q = normalizeText(searchTerm);
+
+    return sourceList.filter(m => {
+      const nomeMun = normalizeText(m.name);
+      const siglaUf = normalizeText(m.uf);
+      const nomeUf = normalizeText(UF_FULL_NAMES[m.uf] || m.uf_nome || '');
+      const regiao = normalizeText(m.reg);
+      const codIbge = String(m.id);
+
+      return (
+        nomeMun.includes(q) ||
+        siglaUf.includes(q) ||
+        nomeUf.includes(q) ||
+        regiao.includes(q) ||
+        codIbge.includes(q)
+      );
+    });
   }, [sourceList, searchTerm]);
 
-  // 2. Ordenação dinâmica
+  // 2. Ordenação por TODAS as colunas
   const sortedData = useMemo(() => {
     const list = [...filteredData];
     return list.sort((a, b) => {
-      let valA, valB;
-      if (sortBy === 'bov') {
-        valA = a.bov;
-        valB = b.bov;
-      } else if (sortBy === 'razao') {
-        valA = a.razao;
-        valB = b.razao;
-      } else if (sortBy === 'pop') {
-        valA = a.pop;
-        valB = b.pop;
-      } else if (sortBy === 'saldo') {
-        valA = Math.abs(a.bov - a.pop);
-        valB = Math.abs(b.bov - b.pop);
+      let comparison = 0;
+
+      if (sortBy === 'id') {
+        comparison = a.id - b.id;
       } else if (sortBy === 'name') {
-        return sortOrder === 'asc'
-          ? a.name.localeCompare(b.name, 'pt-BR')
-          : b.name.localeCompare(a.name, 'pt-BR');
+        comparison = a.name.localeCompare(b.name, 'pt-BR');
       } else if (sortBy === 'uf') {
-        return sortOrder === 'asc'
-          ? a.uf.localeCompare(b.uf)
-          : b.uf.localeCompare(a.uf);
-      } else if (sortBy === 'id') {
-        valA = a.id;
-        valB = b.id;
+        comparison = a.uf.localeCompare(b.uf);
+      } else if (sortBy === 'reg') {
+        comparison = a.reg.localeCompare(b.reg, 'pt-BR');
+      } else if (sortBy === 'bov') {
+        comparison = a.bov - b.bov;
+      } else if (sortBy === 'pop') {
+        comparison = a.pop - b.pop;
+      } else if (sortBy === 'razao') {
+        comparison = a.razao - b.razao;
+      } else if (sortBy === 'saldo') {
+        // Diferença matemática (Bois - Pessoas)
+        const saldoA = a.bov - a.pop;
+        const saldoB = b.bov - b.pop;
+        comparison = saldoA - saldoB;
+      } else if (sortBy === 'mais_boi') {
+        comparison = a.mais_boi - b.mais_boi;
       } else {
-        valA = a.bov;
-        valB = b.bov;
+        comparison = a.bov - b.bov;
       }
 
-      return sortOrder === 'desc' ? valB - valA : valA - valB;
+      return sortOrder === 'desc' ? -comparison : comparison;
     });
   }, [filteredData, sortBy, sortOrder]);
 
-  // 3. Paginação dos dados ordenados
+  // 3. Paginação
   const totalRecords = sortedData.length;
   const isAllPages = pageSize === 'all';
   const recordsPerPage = isAllPages ? totalRecords : Number(pageSize);
   const totalPages = isAllPages || totalRecords === 0 ? 1 : Math.ceil(totalRecords / recordsPerPage);
-
-  // Garantir que a página atual seja válida ao filtrar/ordenar
   const activePage = Math.min(currentPage, totalPages || 1);
 
   const paginatedData = useMemo(() => {
@@ -86,7 +110,7 @@ export default function DataTableTab({ municipios, allMunicipios }) {
   const startIndex = isAllPages ? 0 : (activePage - 1) * recordsPerPage;
   const endIndex = isAllPages ? totalRecords : Math.min(startIndex + recordsPerPage, totalRecords);
 
-  // Manipulador de clique no cabeçalho das colunas
+  // Manipulador de ordenação ao clicar no cabeçalho
   const handleSortColumn = (columnKey, defaultOrder = 'desc') => {
     if (sortBy === columnKey) {
       setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
@@ -97,23 +121,52 @@ export default function DataTableTab({ municipios, allMunicipios }) {
     setCurrentPage(1);
   };
 
-  // Indicador visual de ordenação no cabeçalho
+  // Indicador visual de ordenação bem visível e aparente
   const renderSortIndicator = (columnKey) => {
-    if (sortBy !== columnKey) {
-      return <ArrowUpDown size={12} style={{ opacity: 0.3, marginLeft: '4px', verticalAlign: 'middle' }} />;
+    const isActive = sortBy === columnKey;
+    if (isActive) {
+      return (
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          marginLeft: '6px',
+          color: 'var(--color-amber)',
+          background: 'rgba(245, 158, 11, 0.15)',
+          padding: '2px 4px',
+          borderRadius: '4px',
+          verticalAlign: 'middle'
+        }}>
+          {sortOrder === 'desc' ? (
+            <ChevronDown size={15} strokeWidth={2.8} />
+          ) : (
+            <ChevronUp size={15} strokeWidth={2.8} />
+          )}
+        </span>
+      );
     }
-    return sortOrder === 'desc'
-      ? <ChevronDown size={14} style={{ color: 'var(--color-amber)', marginLeft: '4px', verticalAlign: 'middle' }} />
-      : <ChevronUp size={14} style={{ color: 'var(--color-amber)', marginLeft: '4px', verticalAlign: 'middle' }} />;
+
+    return (
+      <span style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        marginLeft: '6px',
+        color: '#94A3B8',
+        opacity: 0.65,
+        verticalAlign: 'middle'
+      }}>
+        <ArrowUpDown size={13} strokeWidth={2} />
+      </span>
+    );
   };
 
   // Exportar dados em CSV com BOM UTF-8
   const downloadCSV = () => {
-    const headers = ['Cod_IBGE;Municipio;UF;Regiao;Total_Bois;Total_Pessoas;Razao_Boi_Pessoa;Diferenca_Absoluta;Diagnostico'];
+    const headers = ['Cod_IBGE;Municipio;UF;Regiao;Total_Bois;Total_Pessoas;Razao_Boi_Pessoa;Diferenca_Bois_Menos_Pessoas;Diagnostico'];
     const rows = sortedData.map(m => {
-      const diff = Math.abs(m.bov - m.pop);
+      const saldo = m.bov - m.pop;
+      const saldoStr = saldo > 0 ? `+${saldo}` : `${saldo}`;
       const diag = m.mais_boi === 1 ? 'Mais Boi que Gente' : 'Mais Gente que Boi';
-      return `${m.id};"${m.name}";${m.uf};"${m.reg}";${m.bov};${m.pop};${m.razao.toFixed(2).replace('.', ',')};${diff};"${diag}"`;
+      return `${m.id};"${m.name}";${m.uf};"${m.reg}";${m.bov};${m.pop};${m.razao.toFixed(2).replace('.', ',')};${saldoStr};"${diag}"`;
     });
 
     const csvContent = '\uFEFF' + [headers, ...rows].join('\n');
@@ -129,16 +182,16 @@ export default function DataTableTab({ municipios, allMunicipios }) {
 
   return (
     <div className="card-box">
-      {/* Barra de Controles: Busca, Ordenação e Exportação */}
+      {/* Barra de Controles: Busca, Informação de Ordenação e Exportação */}
       <div className="table-controls-row">
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-          {/* Campo de Busca */}
-          <div className="search-box-wrapper" style={{ minWidth: '260px', flex: 1, maxWidth: '420px' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
+          {/* Campo de Busca Ampla */}
+          <div className="search-box-wrapper" style={{ minWidth: '280px', flex: 1, maxWidth: '440px' }}>
             <Search size={16} color="var(--text-subtle)" style={{ position: 'absolute', left: '12px', top: '12px' }} />
             <input
               type="text"
               className="search-input"
-              placeholder="🔍 Buscar cidade, UF ou código IBGE..."
+              placeholder="🔍 Buscar por município, UF, estado ou região..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -148,30 +201,21 @@ export default function DataTableTab({ municipios, allMunicipios }) {
             />
           </div>
 
-          {/* Seletor de Ordenação Rápida */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '0.82rem', color: 'var(--text-subtle)', whiteSpace: 'nowrap' }}>Ordenar por:</span>
-            <select
-              className="select-control"
-              value={`${sortBy}-${sortOrder}`}
-              onChange={(e) => {
-                const [col, ord] = e.target.value.split('-');
-                setSortBy(col);
-                setSortOrder(ord);
-                setCurrentPage(1);
-              }}
-              style={{ minWidth: '210px' }}
-            >
-              <option value="bov-desc">🐂 Mais Bois (Decrescente)</option>
-              <option value="bov-asc">🐂 Menos Bois (Crescente)</option>
-              <option value="razao-desc">📈 Maior Razão Boi/Pessoa</option>
-              <option value="razao-asc">📉 Menor Razão Boi/Pessoa</option>
-              <option value="pop-desc">👥 Mais População (Decrescente)</option>
-              <option value="pop-asc">👥 Menos População (Crescente)</option>
-              <option value="saldo-desc">⚖️ Maior Diferença Absoluta</option>
-              <option value="name-asc">🔤 Município (A-Z)</option>
-              <option value="name-desc">🔤 Município (Z-A)</option>
-            </select>
+          {/* Informação: Clique nas colunas para ordenar */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '0.82rem',
+            color: 'var(--text-main)',
+            background: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid var(--border-subtle)',
+            padding: '8px 12px',
+            borderRadius: '8px',
+            userSelect: 'none'
+          }}>
+            <Info size={14} color="var(--color-amber)" />
+            <span>Clique nas colunas para ordenar</span>
           </div>
 
           {/* Quantidade de Registros por Página */}
@@ -233,62 +277,74 @@ export default function DataTableTab({ municipios, allMunicipios }) {
         </div>
       )}
 
-      {/* Tabela de Dados */}
+      {/* Tabela de Dados com Todas as Colunas Clicáveis */}
       <div className="table-responsive" style={{ maxHeight: '550px', overflow: 'auto' }}>
-        <table className="data-table" style={{ minWidth: '820px' }}>
+        <table className="data-table" style={{ minWidth: '880px' }}>
           <thead>
             <tr>
               <th
                 onClick={() => handleSortColumn('id', 'asc')}
                 style={{ whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Código IBGE"
+                title="Clique para ordenar por Código IBGE"
               >
                 Cód. IBGE {renderSortIndicator('id')}
               </th>
               <th
                 onClick={() => handleSortColumn('name', 'asc')}
                 style={{ whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Nome do Município"
+                title="Clique para ordenar por Nome do Município"
               >
                 Município {renderSortIndicator('name')}
               </th>
               <th
                 onClick={() => handleSortColumn('uf', 'asc')}
                 style={{ whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Estado (UF)"
+                title="Clique para ordenar por Estado (UF)"
               >
                 UF {renderSortIndicator('uf')}
               </th>
-              <th style={{ whiteSpace: 'nowrap' }}>Região</th>
+              <th
+                onClick={() => handleSortColumn('reg', 'asc')}
+                style={{ whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
+                title="Clique para ordenar por Grande Região"
+              >
+                Região {renderSortIndicator('reg')}
+              </th>
               <th
                 onClick={() => handleSortColumn('bov', 'desc')}
                 style={{ textAlign: 'right', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Total de Bois"
+                title="Clique para ordenar por Total de Bois"
               >
                 Total de Bois {renderSortIndicator('bov')}
               </th>
               <th
                 onClick={() => handleSortColumn('pop', 'desc')}
                 style={{ textAlign: 'right', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Total de Pessoas"
+                title="Clique para ordenar por Total de Pessoas"
               >
                 Total de Pessoas {renderSortIndicator('pop')}
               </th>
               <th
                 onClick={() => handleSortColumn('razao', 'desc')}
                 style={{ textAlign: 'right', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Razão Boi por Pessoa"
+                title="Clique para ordenar por Razão Boi por Pessoa"
               >
                 Razão (Bois/Pessoa) {renderSortIndicator('razao')}
               </th>
               <th
                 onClick={() => handleSortColumn('saldo', 'desc')}
                 style={{ textAlign: 'right', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Ordenar por Diferença Absoluta"
+                title="Clique para ordenar por Diferença (Bois - Pessoas)"
               >
-                Diferença {renderSortIndicator('saldo')}
+                Diferença (Bois - Pessoas) {renderSortIndicator('saldo')}
               </th>
-              <th style={{ whiteSpace: 'nowrap' }}>Diagnóstico</th>
+              <th
+                onClick={() => handleSortColumn('mais_boi', 'desc')}
+                style={{ whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
+                title="Clique para ordenar por Classificação de Diagnóstico"
+              >
+                Diagnóstico {renderSortIndicator('mais_boi')}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -300,8 +356,17 @@ export default function DataTableTab({ municipios, allMunicipios }) {
               </tr>
             ) : (
               paginatedData.map(m => {
-                const diff = Math.abs(m.bov - m.pop);
+                const saldo = m.bov - m.pop;
                 const temMaisBoi = m.mais_boi === 1;
+
+                // Formatação com sinal de + e -
+                let saldoFormatado = '0';
+                if (saldo > 0) {
+                  saldoFormatado = `+${formatNumber(saldo)}`;
+                } else if (saldo < 0) {
+                  saldoFormatado = `-${formatNumber(Math.abs(saldo))}`;
+                }
+
                 return (
                   <tr key={m.id}>
                     <td style={{ color: 'var(--text-subtle)' }}>{m.id}</td>
@@ -317,8 +382,12 @@ export default function DataTableTab({ municipios, allMunicipios }) {
                     <td style={{ textAlign: 'right', color: m.razao > 1 ? 'var(--color-amber)' : 'var(--color-emerald)', fontWeight: '600' }}>
                       {m.razao.toFixed(2).replace('.', ',')}
                     </td>
-                    <td style={{ textAlign: 'right', color: temMaisBoi ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
-                      {formatNumber(diff)}
+                    <td style={{
+                      textAlign: 'right',
+                      color: saldo > 0 ? 'var(--color-amber)' : saldo < 0 ? 'var(--color-emerald)' : 'var(--text-subtle)',
+                      fontWeight: '600'
+                    }}>
+                      {saldoFormatado}
                     </td>
                     <td>
                       <span className={`badge-status ${temMaisBoi ? 'badge-boi' : 'badge-gente'}`} style={{ fontSize: '0.75rem', padding: '3px 8px' }}>

@@ -478,7 +478,14 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid var(--border-subtle);
+  transition: color 0.15s ease, background-color 0.15s ease;
 }
+
+.data-table th:hover {
+  color: var(--text-main);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
 
 .data-table td {
   padding: 10px 12px;
