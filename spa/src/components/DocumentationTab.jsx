@@ -11,7 +11,7 @@ export default function DocumentationTab() {
           </div>
         </div>
         <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-          Esta plataforma é uma ferramenta analítica interativa que compara o efetivo de bovinos e o contingente populacional residente em todos os 5.567 municípios do Brasil. A seguir estão descritas as fontes de dados oficiais, a metodologia dos indicadores calculados e a arquitetura tecnológica do sistema.
+          Esta plataforma é uma ferramenta analítica interativa que compara o efetivo de bovinos e o contingente populacional residente em todos os 5.570 municípios do Brasil. A seguir estão descritas as fontes de dados oficiais, a metodologia dos indicadores calculados e a arquitetura tecnológica do sistema.
         </div>
       </div>
 
@@ -42,7 +42,7 @@ export default function DocumentationTab() {
               <div style={{ fontWeight: '600', color: 'var(--text-main)', marginBottom: '3px' }}>
                 Malha Geográfica Vetorial (IBGE Geociências)
               </div>
-              Malhas cartográficas dos 5.567 municípios e das 27 Unidades da Federação na projeção SIRGAS 2000 / WGS84, estruturadas para visualização geoespacial vetorial.
+              Malhas cartográficas vetoriais dos municípios e das 27 Unidades da Federação na projeção SIRGAS 2000 / WGS84, estruturadas para visualização geoespacial vetorial.
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@ export default function DocumentationTab() {
               <div style={{ fontWeight: '600', color: 'var(--text-main)', marginBottom: '3px' }}>
                 Renderização Acelerada na GPU (MapLibre GL JS)
               </div>
-              Motor cartográfico vetorial WebGL com renderização na GPU e <code>feature-state</code> nativo, permitindo destaque instantâneo (0ms de atraso) dos 5.567 polígonos sem travamentos.
+              Motor cartográfico vetorial WebGL com renderização na GPU e <code>feature-state</code> nativo, permitindo destaque instantâneo (0ms de atraso) dos polígonos municipais sem travamentos.
             </div>
 
             <div style={{ padding: '10px 12px', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '6px', borderLeft: '3px solid #10B981' }}>

@@ -494,7 +494,7 @@ export default function MapComponent({ selectedCity, onSelectCity, onResetBrasil
         <div className="map-loading-overlay">
           <div className="spinner" />
           <div className="loading-text">
-            Carregando malha de 5.567 municípios do Brasil...
+            Carregando malha municipal do Brasil...
           </div>
         </div>
       )}
