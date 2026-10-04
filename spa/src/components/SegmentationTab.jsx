@@ -154,7 +154,7 @@ export default function SegmentationTab({ municipios }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Panorama Regional */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-responsive-2col">
         <div className="card-box">
           <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '4px' }}>
             % dos Municípios com Mais Boi que Gente por Região
@@ -164,7 +164,7 @@ export default function SegmentationTab({ municipios }) {
           </div>
           <div style={{ height: '260px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={regData} layout="vertical" margin={{ top: 5, right: 45, left: 40, bottom: 5 }}>
+              <BarChart data={regData} layout="vertical" margin={{ top: 5, right: 45, left: 35, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis type="number" domain={[0, 100]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${v}%`} />
                 <YAxis dataKey="reg" type="category" stroke="#64748B" fontSize={11} tickLine={false} />
@@ -189,7 +189,7 @@ export default function SegmentationTab({ municipios }) {
           </div>
           <div style={{ height: '260px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={regData} margin={{ top: 22, right: 20, left: 10, bottom: 5 }}>
+              <BarChart data={regData} margin={{ top: 22, right: 15, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="reg" stroke="#64748B" fontSize={11} tickLine={false} />
                 <YAxis stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
@@ -215,84 +215,90 @@ export default function SegmentationTab({ municipios }) {
         <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', marginBottom: '14px' }}>
           Proporção média de bois para cada pessoa no estado (Laranja: Mais Boi que Gente | Verde: Mais Gente que Boi)
         </div>
-        <div style={{ height: '320px', width: '100%' }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={ufData} margin={{ top: 22, right: 20, left: 0, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-              <XAxis dataKey="uf" stroke="#64748B" fontSize={11} tickLine={false} />
-              <YAxis hide={true} />
-              <Tooltip content={<CustomUfTooltip />} />
-              <Bar dataKey="razao" name="Bois por Pessoa" radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="razao" position="top" content={renderCustomUfLabel} />
-                {ufData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.razao > 1 ? '#F59E0B' : '#10B981'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="table-responsive" style={{ paddingBottom: '6px' }}>
+          <div style={{ minWidth: '600px', height: '320px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={ufData} margin={{ top: 22, right: 20, left: 0, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+                <XAxis dataKey="uf" stroke="#64748B" fontSize={11} tickLine={false} interval={0} />
+                <YAxis hide={true} />
+                <Tooltip content={<CustomUfTooltip />} />
+                <Bar dataKey="razao" name="Bois por Pessoa" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="razao" position="top" content={renderCustomUfLabel} />
+                  {ufData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.razao > 1 ? '#F59E0B' : '#10B981'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 
       {/* Tabelas Top 10 */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+      <div className="grid-responsive-2col">
         <div className="card-box">
           <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '12px' }}>
             Top 10 Cidades com Mais Bois no Brasil
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Município</th>
-                <th>UF</th>
-                <th style={{ textAlign: 'right' }}>Bois</th>
-                <th style={{ textAlign: 'right' }}>Pessoas</th>
-                <th style={{ textAlign: 'right' }}>Razão</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topBov.map(m => (
-                <tr key={m.id}>
-                  <td><strong>{m.name}</strong></td>
-                  <td>{m.uf}</td>
-                  <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
-                  <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
-                  <td style={{ textAlign: 'right', color: m.razao > 1 ? 'var(--color-amber)' : 'var(--color-emerald)', fontWeight: '600' }}>
-                    {m.razao.toFixed(2).replace('.', ',')}
-                  </td>
+          <div className="table-responsive">
+            <table className="data-table" style={{ minWidth: '420px' }}>
+              <thead>
+                <tr>
+                  <th>Município</th>
+                  <th>UF</th>
+                  <th style={{ textAlign: 'right' }}>Bois</th>
+                  <th style={{ textAlign: 'right' }}>Pessoas</th>
+                  <th style={{ textAlign: 'right' }}>Razão</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {topBov.map(m => (
+                  <tr key={m.id}>
+                    <td><strong>{m.name}</strong></td>
+                    <td>{m.uf}</td>
+                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
+                    <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
+                    <td style={{ textAlign: 'right', color: m.razao > 1 ? 'var(--color-amber)' : 'var(--color-emerald)', fontWeight: '600' }}>
+                      {m.razao.toFixed(2).replace('.', ',')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div className="card-box">
           <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '12px' }}>
             Top 10 Cidades com Maior Razão Boi por Pessoa
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Município</th>
-                <th>UF</th>
-                <th style={{ textAlign: 'right' }}>Bois</th>
-                <th style={{ textAlign: 'right' }}>Pessoas</th>
-                <th style={{ textAlign: 'right' }}>Razão</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topRazao.map(m => (
-                <tr key={m.id}>
-                  <td><strong>{m.name}</strong></td>
-                  <td>{m.uf}</td>
-                  <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
-                  <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
-                  <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '700' }}>
-                    {m.razao.toFixed(2).replace('.', ',')}
-                  </td>
+          <div className="table-responsive">
+            <table className="data-table" style={{ minWidth: '420px' }}>
+              <thead>
+                <tr>
+                  <th>Município</th>
+                  <th>UF</th>
+                  <th style={{ textAlign: 'right' }}>Bois</th>
+                  <th style={{ textAlign: 'right' }}>Pessoas</th>
+                  <th style={{ textAlign: 'right' }}>Razão</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {topRazao.map(m => (
+                  <tr key={m.id}>
+                    <td><strong>{m.name}</strong></td>
+                    <td>{m.uf}</td>
+                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '600' }}>{formatNumber(m.bov)}</td>
+                    <td style={{ textAlign: 'right', color: 'var(--color-emerald)' }}>{formatNumber(m.pop)}</td>
+                    <td style={{ textAlign: 'right', color: 'var(--color-amber)', fontWeight: '700' }}>
+                      {m.razao.toFixed(2).replace('.', ',')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ export default function DocumentationTab() {
       </div>
 
       {/* Grid de 3 Pilares Principais */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px' }}>
+      <div className="doc-grid">
         {/* Pilar 1: Fontes de Dados */}
         <div className="card-box" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div style={{ color: 'var(--color-amber)', fontSize: '1.05rem', fontWeight: '600' }}>

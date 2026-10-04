@@ -32,8 +32,8 @@ export default function DataTableTab({ municipios }) {
 
   return (
     <div className="card-box">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ position: 'relative', width: '320px' }}>
+      <div className="table-controls-row">
+        <div className="search-box-wrapper">
           <Search size={16} color="var(--text-subtle)" style={{ position: 'absolute', left: '12px', top: '12px' }} />
           <input
             type="text"
@@ -50,19 +50,19 @@ export default function DataTableTab({ municipios }) {
         </button>
       </div>
 
-      <div style={{ maxHeight: '550px', overflowY: 'auto' }}>
-        <table className="data-table">
+      <div className="table-responsive" style={{ maxHeight: '550px', overflow: 'auto' }}>
+        <table className="data-table" style={{ minWidth: '780px' }}>
           <thead>
             <tr>
-              <th>Cód. IBGE</th>
-              <th>Município</th>
-              <th>UF</th>
-              <th>Região</th>
-              <th style={{ textAlign: 'right' }}>Total de Bois</th>
-              <th style={{ textAlign: 'right' }}>Total de Pessoas</th>
-              <th style={{ textAlign: 'right' }}>Razão (Bois/Pessoa)</th>
-              <th style={{ textAlign: 'right' }}>Diferença</th>
-              <th>Diagnóstico</th>
+              <th style={{ whiteSpace: 'nowrap' }}>Cód. IBGE</th>
+              <th style={{ whiteSpace: 'nowrap' }}>Município</th>
+              <th style={{ whiteSpace: 'nowrap' }}>UF</th>
+              <th style={{ whiteSpace: 'nowrap' }}>Região</th>
+              <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Total de Bois</th>
+              <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Total de Pessoas</th>
+              <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Razão (Bois/Pessoa)</th>
+              <th style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>Diferença</th>
+              <th style={{ whiteSpace: 'nowrap' }}>Diagnóstico</th>
             </tr>
           </thead>
           <tbody>

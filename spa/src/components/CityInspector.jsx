@@ -117,7 +117,7 @@ export default function CityInspector({
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis domain={[150000000, 250000000]} ticks={[150000000, 175000000, 200000000, 225000000, 250000000]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
+                <YAxis domain={[150000000, 250000000]} ticks={[150000000, 175000000, 200000000, 225000000, 250000000]} width={42} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
@@ -134,7 +134,7 @@ export default function CityInspector({
         // CASO 2: CIDADE ESPECÍFICA SELECIONADA
         // ==========================================
         <div className="card-box">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-display)' }}>
                 <MapPin size={18} color="var(--color-amber)" />
@@ -203,7 +203,7 @@ export default function CityInspector({
               <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                 <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis domain={['auto', 'auto']} stroke="#64748B" fontSize={11} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
+                <YAxis domain={['auto', 'auto']} width={48} stroke="#64748B" fontSize={11} tickFormatter={(v) => formatNumber(v)} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
                   formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
