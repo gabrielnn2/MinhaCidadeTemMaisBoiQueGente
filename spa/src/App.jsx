@@ -301,7 +301,7 @@ export default function App() {
       )}
 
       {activeTab === 'tabela' && (
-        <DataTableTab municipios={filteredMunicipios} />
+        <DataTableTab municipios={filteredMunicipios} allMunicipios={data.municipios} />
       )}
 
       {activeTab === 'documentacao' && (
