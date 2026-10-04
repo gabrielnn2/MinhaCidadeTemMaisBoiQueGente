@@ -728,8 +728,8 @@ body {
   }
 
   .map-container {
-    min-height: 380px;
-    height: 390px;
+    min-height: 420px;
+    height: 440px;
     border-radius: 10px;
   }
 
@@ -810,8 +810,8 @@ body {
   }
 
   .map-container {
-    min-height: 330px;
-    height: 340px;
+    min-height: 390px;
+    height: 410px;
   }
 
   .badge-status {

@@ -67,6 +67,11 @@ const REG_BOUNDS = {
   'Centro-Oeste': [[-61.6328, -24.0679], [-45.9065, -7.3486]]
 };
 
+const BRAZIL_BOUNDS = [
+  [-73.9903, -33.7516], // Sudoeste: Acre / RS
+  [-34.7933, 5.2722]    // Nordeste: Paraíba / Roraima
+];
+
 export default function MapComponent({ selectedCity, onSelectCity, ufFilter, regFilter, classFilter }) {
   const mapContainer = useRef(null);
   const mapRef = useRef(null);
@@ -82,8 +87,10 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
     const map = new maplibregl.Map({
       container: mapContainer.current,
       style: MAP_STYLE,
-      center: [-51.925, -14.235],
-      zoom: 3.5,
+      bounds: BRAZIL_BOUNDS,
+      fitBoundsOptions: {
+        padding: { top: 16, bottom: 20, left: 16, right: 16 }
+      },
       pitch: 0,
       attributionControl: false
     });
@@ -104,7 +111,10 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
         `;
         button.onclick = () => {
           onSelectCity(null);
-          mapInstance.flyTo({ center: [-51.925, -14.235], zoom: 3.5, duration: 800 });
+          mapInstance.fitBounds(BRAZIL_BOUNDS, {
+            padding: { top: 16, bottom: 20, left: 16, right: 16 },
+            duration: 800
+          });
         };
         this._container.appendChild(button);
         return this._container;
@@ -133,6 +143,13 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
     });
 
     map.on('load', () => {
+      // Forçar resize e enquadramento completo do Brasil
+      map.resize();
+      map.fitBounds(BRAZIL_BOUNDS, {
+        padding: { top: 16, bottom: 20, left: 16, right: 16 },
+        duration: 0
+      });
+
       // Carregar em paralelo municípios e limites dos estados (UFs)
       Promise.all([
         fetch('/data/municipios_geo.json').then(r => {
@@ -441,7 +458,10 @@ export default function MapComponent({ selectedCity, onSelectCity, ufFilter, reg
         duration: 800
       });
     } else {
-      map.flyTo({ center: [-51.925, -14.235], zoom: 3.5, duration: 800 });
+      map.fitBounds(BRAZIL_BOUNDS, {
+        padding: { top: 16, bottom: 20, left: 16, right: 16 },
+        duration: 800
+      });
     }
   }, [selectedCity, ufFilter, regFilter, classFilter, dataLoaded]);
 
