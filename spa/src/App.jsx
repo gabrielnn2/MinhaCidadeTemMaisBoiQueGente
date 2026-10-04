@@ -144,7 +144,7 @@ export default function App() {
         <div>
           <div className="title-main">Minha Cidade Tem Mais Boi Que Gente?</div>
           <div className="subtitle-main">
-            Diagnóstico territorial interativo comparando a quantidade de bois e pessoas no Brasil com dados oficiais do IBGE.
+            Diagnóstico territorial interativo comparando a quantidade de bois e pessoas no Brasil com dados oficiais do IBGE (2025).
           </div>
         </div>
 

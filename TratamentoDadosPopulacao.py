@@ -90,7 +90,7 @@ def processar_populacao():
     )
     pop_long['ANO'] = pop_long['ANO'].astype(int)
     pop_long['POPULACAO'] = pop_long['POPULACAO'].round(0).astype('Int64')
-    pop_long = pop_long.sort_values(['CO_MUNICIPIO', 'ANO']).reset_index(drop=True)
+    pop_long = pop_long[pop_long['ANO'] <= 2025].sort_values(['CO_MUNICIPIO', 'ANO']).reset_index(drop=True)
 
     pop_long.to_csv("3_Dados_Processados/populacao.csv", index=False)
     print(f"Sucesso: populacao.csv gravado em 3_Dados_Processados com anos {sorted(pop_long['ANO'].unique())}")

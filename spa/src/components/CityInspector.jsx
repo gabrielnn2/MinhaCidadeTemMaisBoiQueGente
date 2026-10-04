@@ -15,18 +15,22 @@ export default function CityInspector({
   // Preparar dados do gráfico
   let chartData = [];
   if (isBrasil) {
-    chartData = nationalHistory.map(item => ({
-      ano: item.ANO,
-      bois: item.bov,
-      pessoas: item.pop
-    }));
+    chartData = nationalHistory
+      .filter(item => item.ANO <= 2025)
+      .map(item => ({
+        ano: item.ANO,
+        bois: item.bov,
+        pessoas: item.pop
+      }));
   } else if (cityHistory && cityHistory[selectedCity.id]) {
     const hist = cityHistory[selectedCity.id];
-    chartData = anos.map((ano, idx) => ({
-      ano,
-      bois: hist.b[idx] || 0,
-      pessoas: hist.p[idx] || 0
-    }));
+    chartData = anos
+      .map((ano, idx) => ({
+        ano,
+        bois: hist.b[idx] || 0,
+        pessoas: hist.p[idx] || 0
+      }))
+      .filter(item => item.ano <= 2025);
   }
 
   const formatNumber = (val) => Number(val || 0).toLocaleString('pt-BR');
@@ -105,7 +109,7 @@ export default function CityInspector({
           </div>
 
           <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
-            📈 Evolução Histórica Nacional (2000 a 2026)
+            📈 Evolução Histórica Nacional (2000 a 2025)
           </div>
 
           <div style={{ height: '200px', width: '100%' }}>
@@ -191,7 +195,7 @@ export default function CityInspector({
           </div>
 
           <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
-            📈 Evolução Histórica de {selectedCity.name} (2000 a 2026)
+            📈 Evolução Histórica de {selectedCity.name} (2000 a 2025)
           </div>
 
           <div style={{ height: '200px', width: '100%' }}>

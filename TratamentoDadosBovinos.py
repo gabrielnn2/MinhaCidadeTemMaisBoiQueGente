@@ -38,28 +38,12 @@ def processar_bovinos():
     os.makedirs("3_Dados_Processados", exist_ok=True)
     bovinos.to_csv("2_Dados_Tratados/bovinos.csv", index=False)
 
-    # Caso queira projetar 2026 para parear com a estimativa populacional de 2026:
-    max_ano = bovinos['ANO'].max()
-    if max_ano == 2025:
-        print("Projetando bovinos para 2026 com base nos anos recentes (2018-2025)...")
-        bov_recent = bovinos[bovinos["ANO"] >= 2018]
-        proj_2026 = []
-        for mun, sub in bov_recent.groupby("CO_MUNICIPIO"):
-            if len(sub) >= 3:
-                X = sub["ANO"].values.reshape(-1, 1)
-                y = sub["BOVINO"].values
-                model = LinearRegression()
-                model.fit(X, y)
-                y_pred = max(0, model.predict([[2026]])[0])
-            else:
-                y_pred = sub["BOVINO"].iloc[-1]
-            proj_2026.append([mun, int(round(y_pred)), 2026])
-        df_2026 = pd.DataFrame(proj_2026, columns=["CO_MUNICIPIO", "BOVINO", "ANO"])
-        bovinos_completo = pd.concat([bovinos, df_2026], ignore_index=True)
-    else:
-        bovinos_completo = bovinos
+    # Salva dados tratados históricos reais (2000 a 2025)
+    os.makedirs("2_Dados_Tratados", exist_ok=True)
+    os.makedirs("3_Dados_Processados", exist_ok=True)
+    bovinos.to_csv("2_Dados_Tratados/bovinos.csv", index=False)
 
-    bovinos_completo = bovinos_completo.sort_values(['CO_MUNICIPIO', 'ANO']).reset_index(drop=True)
+    bovinos_completo = bovinos[bovinos['ANO'] <= 2025].sort_values(['CO_MUNICIPIO', 'ANO']).reset_index(drop=True)
     bovinos_completo.to_csv("3_Dados_Processados/bovinos.csv", index=False)
     print(f"Sucesso: bovinos.csv gravado em 3_Dados_Processados com anos {sorted(bovinos_completo['ANO'].unique())}")
     return bovinos_completo
