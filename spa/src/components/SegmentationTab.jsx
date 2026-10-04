@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, LabelList, Cell } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, Legend, LabelList, Cell } from 'recharts';
 
 const UF_NAMES = {
   AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia',
@@ -11,9 +11,18 @@ const UF_NAMES = {
   SE: 'Sergipe', TO: 'Tocantins'
 };
 
-export default function SegmentationTab({ municipios }) {
+export default function SegmentationTab({ municipios, nationalHistory }) {
   const formatNumber = (val) => Number(val || 0).toLocaleString('pt-BR');
   const formatMillions = (val) => `${(val / 1000000).toFixed(1).replace('.', ',')}M`;
+
+  // Dados da Evolução Histórica Nacional (2000 a 2025)
+  const nationalChartData = (nationalHistory || [])
+    .filter(item => item.ANO <= 2025)
+    .map(item => ({
+      ano: item.ANO,
+      bois: item.bov,
+      pessoas: item.pop
+    }));
 
   // 1. Agregação Regional
   const regMap = {};
@@ -157,25 +166,26 @@ export default function SegmentationTab({ municipios }) {
       <div className="grid-responsive-2col">
         <div className="card-box">
           <div style={{ fontSize: '1rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '4px' }}>
-            % dos Municípios com Mais Boi que Gente por Região
+            Evolução Histórica Nacional (2000 a 2025)
           </div>
           <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)', marginBottom: '14px' }}>
-            Percentual de cidades onde o rebanho de bois supera a contagem de pessoas
+            Série temporal oficial do IBGE comparando o rebanho bovino e a população
           </div>
           <div style={{ height: '260px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={regData} layout="vertical" margin={{ top: 5, right: 45, left: 35, bottom: 5 }}>
+              <LineChart data={nationalChartData} margin={{ top: 10, right: 15, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis type="number" domain={[0, 100]} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${v}%`} />
-                <YAxis dataKey="reg" type="category" stroke="#64748B" fontSize={11} tickLine={false} />
+                <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
+                <YAxis domain={[150000000, 250000000]} ticks={[150000000, 175000000, 200000000, 225000000, 250000000]} width={42} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
                 <Tooltip
                   contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
-                  formatter={(val) => [`${Number(val).toFixed(1).replace('.', ',')}%`, '% Cidades com Mais Boi que Gente']}
+                  formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
+                  labelFormatter={(l) => `Ano: ${l}`}
                 />
-                <Bar dataKey="pct_boi" name="% Cidades com Mais Boi que Gente" fill="#F59E0B" radius={[0, 4, 4, 0]}>
-                  <LabelList dataKey="pct_boi" position="right" formatter={(val) => `${Number(val).toFixed(1).replace('.', ',')}%`} fill="#F59E0B" fontSize={11} fontWeight={600} />
-                </Bar>
-              </BarChart>
+                <Legend wrapperStyle={{ paddingTop: '8px' }} />
+                <Line type="monotone" dataKey="bois" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 2 }} name="bois" />
+                <Line type="monotone" dataKey="pessoas" stroke="#10B981" strokeWidth={2.5} dot={{ r: 2 }} name="pessoas" />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>

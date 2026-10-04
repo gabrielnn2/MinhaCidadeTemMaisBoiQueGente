@@ -6,23 +6,16 @@ export default function CityInspector({
   selectedCity,
   onResetCity,
   nationalSummary,
-  nationalHistory,
   anos,
-  cityHistory
+  cityHistory,
+  regFilter,
+  ufFilter
 }) {
   const isBrasil = !selectedCity;
 
-  // Preparar dados do gráfico
+  // Preparar dados do gráfico municipal
   let chartData = [];
-  if (isBrasil) {
-    chartData = nationalHistory
-      .filter(item => item.ANO <= 2025)
-      .map(item => ({
-        ano: item.ANO,
-        bois: item.bov,
-        pessoas: item.pop
-      }));
-  } else if (cityHistory && cityHistory[selectedCity.id]) {
+  if (!isBrasil && cityHistory && cityHistory[selectedCity.id]) {
     const hist = cityHistory[selectedCity.id];
     chartData = anos
       .map((ano, idx) => ({
@@ -39,23 +32,29 @@ export default function CityInspector({
     <div className="inspector-panel">
       {isBrasil ? (
         // ==========================================
-        // CASO 1: AGREGADO ESPECIAL DO BRASIL
+        // CASO 1: AGREGADO ESPECIAL DO BRASIL / RECORTE
         // ==========================================
         <div className="card-box">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
             <div>
               <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-display)' }}>
-                🇧🇷 Agregado Especial: Brasil Consolidado
+                {ufFilter && ufFilter !== 'Todas as UFs'
+                  ? `Recorte: ${ufFilter}`
+                  : regFilter && regFilter !== 'Todas as Regiões'
+                  ? `Recorte: ${regFilter}`
+                  : '🇧🇷 Agregado Especial: Brasil Consolidado'}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
-                Cobertura: 5.567 municípios brasileiros • Ano 2025
+                Cobertura: {formatNumber(nationalSummary.totalMun)} municípios • Ano 2025
               </div>
             </div>
           </div>
 
           <div style={{ marginTop: '10px', marginBottom: '16px' }}>
-            <span className="badge-status badge-boi">
-              🐂 O BRASIL TEM MAIS BOI QUE GENTE
+            <span className={`badge-status ${nationalSummary.saldo >= 0 ? 'badge-boi' : 'badge-gente'}`}>
+              {(ufFilter && ufFilter !== 'Todas as UFs') || (regFilter && regFilter !== 'Todas as Regiões')
+                ? nationalSummary.saldo >= 0 ? '🐂 ESTE RECORTE TEM MAIS BOI QUE GENTE' : '👥 ESTE RECORTE TEM MAIS GENTE QUE BOI'
+                : '🐂 O BRASIL TEM MAIS BOI QUE GENTE'}
             </span>
           </div>
 
@@ -93,40 +92,26 @@ export default function CityInspector({
                 {nationalSummary.saldo >= 0 ? 'bois a mais que pessoas' : 'pessoas a mais que bois'}
               </div>
             </div>
-          </div>
 
-          <div style={{
-            fontSize: '0.82rem',
-            color: 'var(--text-muted)',
-            lineHeight: 1.45,
-            padding: '10px 12px',
-            background: 'rgba(245, 158, 11, 0.05)',
-            borderLeft: '3px solid var(--color-amber)',
-            borderRadius: '4px',
-            marginBottom: '16px'
-          }}>
-            Em <strong>2025</strong>, <strong>{formatNumber(nationalSummary.cidadesMaisBoi)} municípios</strong> ({nationalSummary.pctMaisBoi.toFixed(1).replace('.', ',')}% do país) possuíam mais bois do que pessoas.
-          </div>
+            <div className="metric-mini">
+              <div className="metric-mini-label">Mais Boi que Gente</div>
+              <div className="metric-mini-val" style={{ color: 'var(--color-amber)' }}>
+                {nationalSummary.pctMaisBoi.toFixed(1).replace('.', ',')}%
+              </div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
+                {formatNumber(nationalSummary.cidadesMaisBoi)} municípios
+              </div>
+            </div>
 
-          <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
-            📈 Evolução Histórica Nacional (2000 a 2025)
-          </div>
-
-          <div style={{ height: '200px', width: '100%' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                <XAxis dataKey="ano" stroke="#64748B" fontSize={11} tickLine={false} />
-                <YAxis domain={[150000000, 250000000]} ticks={[150000000, 175000000, 200000000, 225000000, 250000000]} width={42} stroke="#64748B" fontSize={11} tickFormatter={(v) => `${(v / 1000000).toFixed(0)}M`} tickLine={false} />
-                <Tooltip
-                  contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', fontSize: '12px' }}
-                  formatter={(value, name) => [formatNumber(value), name === 'bois' ? 'Bois' : 'Pessoas']}
-                  labelFormatter={(l) => `Ano: ${l}`}
-                />
-                <Line type="monotone" dataKey="bois" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 2 }} name="bois" />
-                <Line type="monotone" dataKey="pessoas" stroke="#10B981" strokeWidth={2.5} dot={{ r: 2 }} name="pessoas" />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="metric-mini">
+              <div className="metric-mini-label">Mais Gente que Boi</div>
+              <div className="metric-mini-val" style={{ color: 'var(--color-emerald)' }}>
+                {nationalSummary.pctMaisGente.toFixed(1).replace('.', ',')}%
+              </div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
+                {formatNumber(nationalSummary.cidadesMaisGente)} municípios
+              </div>
+            </div>
           </div>
         </div>
       ) : (
@@ -195,7 +180,7 @@ export default function CityInspector({
           </div>
 
           <div style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)', marginBottom: '8px' }}>
-            📈 Evolução Histórica de {selectedCity.name} (2000 a 2025)
+            Evolução Histórica de {selectedCity.name} (2000 a 2025)
           </div>
 
           <div style={{ height: '200px', width: '100%' }}>

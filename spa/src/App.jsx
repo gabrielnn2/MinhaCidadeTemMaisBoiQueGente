@@ -147,73 +147,6 @@ export default function App() {
             Diagnóstico territorial interativo comparando a quantidade de bois e pessoas no Brasil com dados oficiais do IBGE (2025).
           </div>
         </div>
-
-        {/* Filtros de Recorte (Região e UF) */}
-        <div className="filter-row">
-          <select
-            className="select-control"
-            value={regFilter}
-            onChange={(e) => {
-              setRegFilter(e.target.value);
-              setUfFilter('Todas as UFs');
-              setSelectedCity(null);
-            }}
-          >
-            {regioesDisponiveis.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-
-          <select
-            className="select-control"
-            value={ufFilter}
-            onChange={(e) => {
-              setUfFilter(e.target.value);
-              setSelectedCity(null);
-            }}
-          >
-            {ufsDisponiveis.map(u => <option key={u.sigla} value={u.sigla}>{u.label}</option>)}
-          </select>
-        </div>
-      </div>
-
-      {/* KPI Grid Minimal */}
-      <div className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-tag">Total de Bois</div>
-          <div className="kpi-value" style={{ color: 'var(--color-amber)' }}>{formatNumber(kpis.totalBov)}</div>
-          <div className="kpi-footnote">bois</div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-tag">Total de Pessoas</div>
-          <div className="kpi-value" style={{ color: 'var(--color-emerald)' }}>{formatNumber(kpis.totalPop)}</div>
-          <div className="kpi-footnote">pessoas</div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-tag">Razão Boi / Pessoa</div>
-          <div className="kpi-value" style={{ color: kpis.saldo >= 0 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
-            {kpis.razao.toFixed(2).replace('.', ',')}
-          </div>
-          <div className="kpi-footnote">
-            {kpis.saldo >= 0 ? `${formatNumber(Math.abs(kpis.saldo))} bois a mais` : `${formatNumber(Math.abs(kpis.saldo))} pessoas a mais`}
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-tag">Mais Boi que Gente</div>
-          <div className="kpi-value" style={{ color: 'var(--color-amber)' }}>
-            {kpis.pctMaisBoi.toFixed(1).replace('.', ',')}%
-          </div>
-          <div className="kpi-footnote">{formatNumber(kpis.cidadesMaisBoi)} municípios</div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-tag">Mais Gente que Boi</div>
-          <div className="kpi-value" style={{ color: 'var(--color-emerald)' }}>
-            {kpis.pctMaisGente.toFixed(1).replace('.', ',')}%
-          </div>
-          <div className="kpi-footnote">{formatNumber(kpis.cidadesMaisGente)} municípios</div>
-        </div>
       </div>
 
       {/* Navegação por Abas */}
@@ -247,9 +180,37 @@ export default function App() {
             classFilter={classFilter}
           />
 
-          {/* Painel Lateral: Busca & Inspetor (Brasil / Cidade) */}
+          {/* Painel Lateral: Filtros, Busca & Inspetor (Brasil / Cidade) */}
           <div>
-            {/* Campo de Busca Rápido */}
+            {/* Filtros de Recorte (Região e UF) logo acima da seleção de município */}
+            <div className="filter-row" style={{ marginBottom: '12px' }}>
+              <select
+                className="select-control"
+                value={regFilter}
+                onChange={(e) => {
+                  setRegFilter(e.target.value);
+                  setUfFilter('Todas as UFs');
+                  setSelectedCity(null);
+                }}
+                style={{ flex: 1 }}
+              >
+                {regioesDisponiveis.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+
+              <select
+                className="select-control"
+                value={ufFilter}
+                onChange={(e) => {
+                  setUfFilter(e.target.value);
+                  setSelectedCity(null);
+                }}
+                style={{ flex: 1 }}
+              >
+                {ufsDisponiveis.map(u => <option key={u.sigla} value={u.sigla}>{u.label}</option>)}
+              </select>
+            </div>
+
+            {/* Campo de Busca Rápido (Seleção de Município) */}
             <div className="search-container" ref={searchContainerRef}>
               <input
                 type="text"
@@ -301,16 +262,17 @@ export default function App() {
                 setSearchQuery('');
               }}
               nationalSummary={kpis}
-              nationalHistory={data.br_hist}
               anos={data.anos}
               cityHistory={data.historico_municipios}
+              regFilter={regFilter}
+              ufFilter={ufFilter}
             />
           </div>
         </div>
       )}
 
       {activeTab === 'segmentacao' && (
-        <SegmentationTab municipios={filteredMunicipios} />
+        <SegmentationTab municipios={filteredMunicipios} nationalHistory={data.br_hist} />
       )}
 
       {activeTab === 'tabela' && (
