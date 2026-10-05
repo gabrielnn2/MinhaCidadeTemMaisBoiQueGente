@@ -261,7 +261,7 @@ export default function App() {
                       setIsSearchOpen(false);
                     }}
                   >
-                    <strong>🇧🇷 Brasil (Visão Agregada - Todos os Municípios)</strong>
+                    <strong>🇧🇷 Brasil</strong>
                   </div>
 
                   {searchResults.map(c => (
@@ -281,7 +281,7 @@ export default function App() {
               )}
             </div>
 
-            {/* Inspetor (Agregado Especial do Brasil ou Cidade Selecionada) */}
+            {/* Inspetor (Brasil ou Cidade Selecionada) */}
             <CityInspector
               selectedCity={selectedCity}
               onResetCity={handleResetBrasil}
@@ -297,11 +297,11 @@ export default function App() {
       )}
 
       {activeTab === 'segmentacao' && (
-        <SegmentationTab municipios={filteredMunicipios} nationalHistory={data.br_hist} />
+        <SegmentationTab municipios={data.municipios} nationalHistory={data.br_hist} />
       )}
 
       {activeTab === 'tabela' && (
-        <DataTableTab municipios={filteredMunicipios} allMunicipios={data.municipios} />
+        <DataTableTab municipios={data.municipios} allMunicipios={data.municipios} />
       )}
 
       {activeTab === 'documentacao' && (

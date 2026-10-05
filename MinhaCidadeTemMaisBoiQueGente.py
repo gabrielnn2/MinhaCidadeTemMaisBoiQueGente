@@ -337,8 +337,8 @@ with tab_mapa:
     with col_consulta_area:
         st.markdown("#### 🔍 Consulta & Diagnóstico")
         
-        # Opções de Seleção: Agregado do Brasil selecionado por padrão na inicialização
-        OPCAO_BRASIL = "🇧🇷 Brasil (Visão Agregada - Todos os Municípios)"
+        # Opções de Seleção: Brasil selecionado por padrão na inicialização
+        OPCAO_BRASIL = "🇧🇷 Brasil"
         
         # Lista filtrada de cidades baseada na Região/UF ativa
         cidades_base_filtro = df_filtrado[["NM_MUNICIPIO", "SG_UF", "CO_MUNICIPIO"]].drop_duplicates()
@@ -374,13 +374,23 @@ with tab_mapa:
             br_cidades_tot = int(df_br_ano["total_cidades"])
             br_pct_boi = (br_cidades_boi / br_cidades_tot * 100)
             
+            if uf_selecionada != "Todas as UFs":
+                recorte_titulo = f"{uf_selecionada}"
+            elif regiao_selecionada != "Todas as Regiões":
+                recorte_titulo = f"{regiao_selecionada}"
+            else:
+                recorte_titulo = "Brasil"
+
+            badge_recorte_text = f"🐂 {recorte_titulo.upper()} TEM MAIS BOI QUE GENTE" if br_saldo >= 0 else f"👥 {recorte_titulo.upper()} TEM MAIS GENTE QUE BOI"
+            badge_recorte_class = "badge-amber" if br_saldo >= 0 else "badge-emerald"
+
             st.markdown(f"""
             <div class="inspector-card">
-                <div class="inspector-header">🇧🇷 Agregado Especial: Brasil Consolidado</div>
+                <div class="inspector-header">{recorte_titulo}</div>
                 <div class="inspector-meta">5.570 municípios analisados • Ano de referência: {ano_selecionado}</div>
                 <div style="margin-bottom: 14px;">
-                    <span class="badge-minimal badge-amber">
-                        🐂 DIAGNÓSTICO NACIONAL: O BRASIL TEM MAIS BOI QUE GENTE
+                    <span class="badge-minimal {badge_recorte_class}">
+                        {badge_recorte_text}
                     </span>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
@@ -899,7 +909,7 @@ with tab_dados:
     st.markdown(f"#### 📋 Tabela Completa de Municípios ({ano_selecionado})")
     st.caption("Consulte e baixe os dados do recorte ativo.")
     
-    df_view = df_filtrado[[
+    df_view = df_ano[[
         "CO_MUNICIPIO", "NM_MUNICIPIO", "SG_UF", "NM_REGIAO",
         "BOVINO", "POPULACAO", "RAZAO", "DIFERENCA", "CATEGORIA"
     ]].sort_values("BOVINO", ascending=False)

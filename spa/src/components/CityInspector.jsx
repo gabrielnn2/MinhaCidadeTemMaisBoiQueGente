@@ -2,6 +2,16 @@ import React from 'react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { ArrowLeft, MapPin } from 'lucide-react';
 
+const UF_NAMES = {
+  AC: 'Acre', AL: 'Alagoas', AP: 'Amapá', AM: 'Amazonas', BA: 'Bahia',
+  CE: 'Ceará', DF: 'Distrito Federal', ES: 'Espírito Santo', GO: 'Goiás',
+  MA: 'Maranhão', MT: 'Mato Grosso', MS: 'Mato Grosso do Sul', MG: 'Minas Gerais',
+  PA: 'Pará', PB: 'Paraíba', PR: 'Paraná', PE: 'Pernambuco', PI: 'Piauí',
+  RJ: 'Rio de Janeiro', RN: 'Rio Grande do Norte', RS: 'Rio Grande do Sul',
+  RO: 'Rondônia', RR: 'Roraima', SC: 'Santa Catarina', SP: 'São Paulo',
+  SE: 'Sergipe', TO: 'Tocantins'
+};
+
 export default function CityInspector({
   selectedCity,
   onResetCity,
@@ -20,6 +30,21 @@ export default function CityInspector({
   );
 
   const handleReset = onResetBrasil || onResetCity;
+
+  const hasUf = ufFilter && ufFilter !== 'Todas as UFs';
+  const hasReg = regFilter && regFilter !== 'Todas as Regiões';
+
+  let recorteTitle = 'Brasil';
+  let recorteNome = 'Brasil';
+
+  if (hasUf) {
+    const nomeUf = UF_NAMES[ufFilter] || ufFilter;
+    recorteTitle = `${nomeUf} (${ufFilter})`;
+    recorteNome = `${nomeUf} (${ufFilter})`;
+  } else if (hasReg) {
+    recorteTitle = regFilter;
+    recorteNome = regFilter;
+  }
 
   // Preparar dados do gráfico municipal
   let chartData = [];
@@ -46,11 +71,7 @@ export default function CityInspector({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
               <div style={{ fontSize: '1.25rem', fontWeight: '700', color: 'var(--text-main)', fontFamily: 'var(--font-display)' }}>
-                {ufFilter && ufFilter !== 'Todas as UFs'
-                  ? `Recorte: ${ufFilter}`
-                  : regFilter && regFilter !== 'Todas as Regiões'
-                  ? `Recorte: ${regFilter}`
-                  : '🇧🇷 Agregado Especial: Brasil Consolidado'}
+                {recorteTitle}
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
                 Cobertura: {formatNumber(nationalSummary.totalMun)} municípios • Ano 2025
@@ -66,9 +87,9 @@ export default function CityInspector({
 
           <div style={{ marginTop: '10px', marginBottom: '16px' }}>
             <span className={`badge-status ${nationalSummary.saldo >= 0 ? 'badge-boi' : 'badge-gente'}`}>
-              {(ufFilter && ufFilter !== 'Todas as UFs') || (regFilter && regFilter !== 'Todas as Regiões')
-                ? nationalSummary.saldo >= 0 ? '🐂 ESTE RECORTE TEM MAIS BOI QUE GENTE' : '👥 ESTE RECORTE TEM MAIS GENTE QUE BOI'
-                : '🐂 O BRASIL TEM MAIS BOI QUE GENTE'}
+              {nationalSummary.saldo >= 0
+                ? `🐂 ${recorteNome.toUpperCase()} TEM MAIS BOI QUE GENTE`
+                : `👥 ${recorteNome.toUpperCase()} TEM MAIS GENTE QUE BOI`}
             </span>
           </div>
 
