@@ -394,7 +394,7 @@ with tab_mapa:
                     </div>
                     <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
                         <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Razão Nacional</div>
-                        <div style="font-size: 1.3rem; font-weight: 700; color: #F8FAFC;">{br_razao:.2f} bois/hab</div>
+                        <div style="font-size: 1.3rem; font-weight: 700; color: #F8FAFC;">{br_razao:.2f} {'boi por pessoa' if -2 < br_razao < 2 else 'bois por pessoa'}</div>
                     </div>
                     <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
                         <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Saldo Líquido</div>
@@ -499,8 +499,8 @@ with tab_mapa:
                             <div style="font-size: 1.3rem; font-weight: 700; color: #34D399;">{format_pt(cid_pop)}</div>
                         </div>
                         <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
-                            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Razão Boi/Hab</div>
-                            <div style="font-size: 1.3rem; font-weight: 700; color: #F8FAFC;">{cid_razao:.2f} bois/hab</div>
+                            <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Razão Boi/Pessoa</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #F8FAFC;">{cid_razao:.2f} {'boi por pessoa' if -2 < cid_razao < 2 else 'bois por pessoa'}</div>
                         </div>
                         <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px;">
                             <div style="font-size: 0.72rem; color: #64748B; text-transform: uppercase;">Saldo Líquido</div>
@@ -591,6 +591,7 @@ with tab_mapa:
                     "bovino_fmt": format_pt(int(row["BOVINO"])),
                     "pop_fmt": format_pt(int(row["POPULACAO"])),
                     "razao_fmt": f"{row['RAZAO']:.2f}",
+                    "razao_sufixo": "boi por pessoa" if (-2 < float(row['RAZAO']) < 2) else "bois por pessoa",
                     "fill_color": cor
                 }
             })
@@ -632,7 +633,7 @@ with tab_mapa:
                     <div>🐂 <strong>Bovinos:</strong> {bovino_fmt} cabeças</div>
                     <div>👥 <strong>População:</strong> {pop_fmt} hab.</div>
                     <div style="margin-top: 4px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); color: #FBBF24;">
-                        ⚖️ <strong>Razão:</strong> {razao_fmt} bois/habitante
+                        ⚖️ <strong>Razão:</strong> {razao_fmt} {razao_sufixo}
                     </div>
                 </div>
                 """
@@ -831,7 +832,7 @@ with tab_segmentacao:
     st.markdown("---")
     
     # Ranking por Estado
-    st.markdown("##### Ranking Estadual por Densidade de Rebanho (Boi por Habitante)")
+    st.markdown("##### Ranking Estadual por Densidade de Rebanho (Bois por Pessoa)")
     df_uf_agg = df_ano.groupby(["SG_UF", "NM_UF", "NM_REGIAO"]).agg(
         bov=("BOVINO", "sum"),
         pop=("POPULACAO", "sum"),
@@ -856,7 +857,7 @@ with tab_segmentacao:
         height=320,
         margin={"l": 10, "r": 10, "t": 35, "b": 10},
         xaxis_title="UF",
-        yaxis_title="Bois / Habitante"
+        yaxis_title="Bois por Pessoa"
     )
     fig_uf_bar.update_traces(texttemplate="%{text:.2f}", textposition="outside")
     st.plotly_chart(fig_uf_bar, use_container_width=True)
@@ -866,12 +867,12 @@ with tab_segmentacao:
     with col_t1:
         st.markdown(f"##### 🏆 Top 10 Maiores Rebanhos Bovinos ({ano_selecionado})")
         top_bov = df_ano.nlargest(10, "BOVINO")[["NM_MUNICIPIO", "SG_UF", "BOVINO", "POPULACAO", "RAZAO"]]
-        top_bov.columns = ["Município", "UF", "Rebanho Bovino", "População", "Boi/Hab"]
+        top_bov.columns = ["Município", "UF", "Rebanho Bovino", "População", "Bois/Pessoa"]
         st.dataframe(
             top_bov.style.format({
                 "Rebanho Bovino": "{:,.0f}",
                 "População": "{:,.0f}",
-                "Boi/Hab": "{:.2f}"
+                "Bois/Pessoa": "{:.2f}"
             }),
             use_container_width=True,
             hide_index=True
@@ -880,10 +881,10 @@ with tab_segmentacao:
     with col_t2:
         st.markdown(f"##### 🚀 Top 10 Cidades com Mais Boi por Habitante ({ano_selecionado})")
         top_rz = df_ano[df_ano["POPULACAO"] >= 1000].nlargest(10, "RAZAO")[["NM_MUNICIPIO", "SG_UF", "RAZAO", "BOVINO", "POPULACAO"]]
-        top_rz.columns = ["Município", "UF", "Boi/Hab", "Rebanho Bovino", "População"]
+        top_rz.columns = ["Município", "UF", "Bois/Pessoa", "Rebanho Bovino", "População"]
         st.dataframe(
             top_rz.style.format({
-                "Boi/Hab": "{:.2f}",
+                "Bois/Pessoa": "{:.2f}",
                 "Rebanho Bovino": "{:,.0f}",
                 "População": "{:,.0f}"
             }),
@@ -905,14 +906,14 @@ with tab_dados:
     
     df_view.columns = [
         "Cód. IBGE", "Município", "UF", "Região",
-        "Bovinos", "População", "Razão (Boi/Hab)", "Saldo Líquido", "Diagnóstico"
+        "Bovinos", "População", "Razão (Bois/Pessoa)", "Saldo Líquido", "Diagnóstico"
     ]
     
     st.dataframe(
         df_view.style.format({
             "Bovinos": "{:,.0f}",
             "População": "{:,.0f}",
-            "Razão (Boi/Hab)": "{:.2f}",
+            "Razão (Bois/Pessoa)": "{:.2f}",
             "Saldo Líquido": "{:+,.0f}"
         }),
         use_container_width=True,

@@ -83,6 +83,7 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
       const d = payload[0].payload;
       const temMaisBoi = d.bov > d.pop;
       const corRazao = temMaisBoi ? '#F59E0B' : '#10B981';
+      const razaoTexto = (d.razao > -2 && d.razao < 2) ? 'boi por pessoa' : 'bois por pessoa';
       return (
         <div className="custom-map-tooltip" style={{ minWidth: '180px' }}>
           <div className="tooltip-header">Região {d.reg}</div>
@@ -98,7 +99,7 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
             <strong style={{ color: '#10B981' }}>{formatNumber(d.pop)}</strong>
           </div>
           <div className="tooltip-footer">
-            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
+            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> {razaoTexto}
           </div>
         </div>
       );
@@ -112,6 +113,7 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
       const d = payload[0].payload;
       const temMaisBoi = d.razao > 1;
       const corRazao = temMaisBoi ? '#F59E0B' : '#10B981';
+      const razaoTexto = (d.razao > -2 && d.razao < 2) ? 'boi por pessoa' : 'bois por pessoa';
       return (
         <div className="custom-map-tooltip" style={{ minWidth: '180px' }}>
           <div className="tooltip-header">{d.uf_nome} ({d.uf})</div>
@@ -127,7 +129,7 @@ export default function SegmentationTab({ municipios, nationalHistory }) {
             <strong style={{ color: '#10B981' }}>{formatNumber(d.pop)}</strong>
           </div>
           <div className="tooltip-footer">
-            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> bois por pessoa
+            Razão: <strong style={{ color: corRazao }}>{d.razao.toFixed(2).replace('.', ',')}</strong> {razaoTexto}
           </div>
         </div>
       );

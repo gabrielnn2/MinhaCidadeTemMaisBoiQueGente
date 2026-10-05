@@ -94,7 +94,9 @@ export default function CityInspector({
               <div className="metric-mini-val" style={{ color: nationalSummary.saldo >= 0 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {nationalSummary.razao.toFixed(2).replace('.', ',')}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>bois por pessoa</div>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-subtle)', marginTop: '2px' }}>
+                {nationalSummary.razao > -2 && nationalSummary.razao < 2 ? 'boi por pessoa' : 'bois por pessoa'}
+              </div>
             </div>
 
             <div className="metric-mini">
@@ -179,7 +181,9 @@ export default function CityInspector({
               <div className="metric-mini-val" style={{ color: selectedCity.mais_boi === 1 ? 'var(--color-amber)' : 'var(--color-emerald)' }}>
                 {selectedCity.razao.toFixed(2).replace('.', ',')}
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>bois por pessoa</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-subtle)', marginTop: '1px' }}>
+                {selectedCity.razao > -2 && selectedCity.razao < 2 ? 'boi por pessoa' : 'bois por pessoa'}
+              </div>
             </div>
 
             <div className="metric-mini">

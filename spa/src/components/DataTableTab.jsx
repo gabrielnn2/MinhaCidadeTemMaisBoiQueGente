@@ -327,7 +327,7 @@ export default function DataTableTab({ municipios, allMunicipios }) {
               <th
                 onClick={() => handleSortColumn('razao', 'desc')}
                 style={{ textAlign: 'right', whiteSpace: 'nowrap', cursor: 'pointer', userSelect: 'none' }}
-                title="Clique para ordenar por Razão Boi por Pessoa"
+                title="Clique para ordenar por Razão (Bois por Pessoa)"
               >
                 Razão (Bois/Pessoa) {renderSortIndicator('razao')}
               </th>

@@ -329,6 +329,8 @@ export default function MapComponent({ selectedCity, onSelectCity, onResetBrasil
 
             const temMaisBoi = Number(p.mais_boi) === 1;
             const corRazao = temMaisBoi ? '#F59E0B' : '#10B981';
+            const razaoNum = Number(p.razao || 0);
+            const razaoTexto = (razaoNum > -2 && razaoNum < 2) ? 'boi por pessoa' : 'bois por pessoa';
             const html = `
               <div class="custom-map-tooltip">
                 <div class="tooltip-header">${p.name} (${p.uf})</div>
@@ -344,7 +346,7 @@ export default function MapComponent({ selectedCity, onSelectCity, onResetBrasil
                   <strong style="color: #10B981;">${Number(p.pop || 0).toLocaleString('pt-BR')}</strong>
                 </div>
                 <div class="tooltip-footer">
-                  Razão: <strong style="color: ${corRazao};">${Number(p.razao || 0).toFixed(2).replace('.', ',')}</strong> bois por pessoa
+                  Razão: <strong style="color: ${corRazao};">${razaoNum.toFixed(2).replace('.', ',')}</strong> ${razaoTexto}
                 </div>
               </div>
             `;
